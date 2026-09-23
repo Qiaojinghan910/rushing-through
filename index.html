@@ -10,6 +10,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
+  /* 中文像素字体：缝合像素字体 Fusion Pixel（OFL 开源许可，见 fonts/OFL.txt） */
+  @font-face {
+    font-family: "Fusion Pixel";
+    src: url("fonts/fusion-pixel-zh_hans.woff2") format("woff2");
+    font-display: swap;
+  }
+</style>
+<style>
   :root {
     /* 粉彩像素盘 */
     --navy: #2d3a8c;        /* 描边/正文 */
@@ -27,7 +35,7 @@
     --yellow: #ffd94c;
     --red: #f2695c;
     --px: "Press Start 2P", "Courier New", monospace;
-    --cn: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --cn: "Fusion Pixel", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   }
 
   * { box-sizing: border-box; }
@@ -307,6 +315,7 @@
   footer .line1 { font-family: var(--px); font-size: 10px; letter-spacing: 3px; }
   footer .line2 { margin-top: 12px; font-size: .9rem; color: #9db4dd; }
   footer .credits { margin-top: 8px; font-size: .78rem; color: #7e97c9; }
+  footer .credits .font-credit { display: block; margin-top: 4px; }
 
   @media (max-width: 860px) {
     .steps { flex-direction: column; }
@@ -644,7 +653,7 @@
     </div>
     <div class="line1">© 2026 RUSHING THROUGH</div>
     <div class="line2">这间小屋，用像素、蜡笔和一点点爱心搭成。</div>
-    <div class="credits">三个作品来自开源项目：shadertoy-1d-radial-lightmap（原 shader 作者 Flyguy · CC BY-NC-SA 3.0） / 转眼 lifebook / webgpu-compute-water</div>
+    <div class="credits">三个作品来自开源项目：shadertoy-1d-radial-lightmap（原 shader 作者 Flyguy · CC BY-NC-SA 3.0） / 转眼 lifebook / webgpu-compute-water<span class="font-credit">中文字体：缝合像素字体 Fusion Pixel（作者 TakWolf · OFL 开源许可）</span></div>
   </footer>
 
 </div>

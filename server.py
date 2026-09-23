@@ -38,6 +38,8 @@ MIME = {
     ".bin": "application/octet-stream",
     ".wasm": "application/wasm",
     ".txt": "text/plain; charset=utf-8",
+    ".woff2": "font/woff2",
+    ".woff": "font/woff",
 }
 
 
@@ -52,10 +54,13 @@ class Handler(BaseHTTPRequestHandler):
             (r for r in ROUTES if path == r[0].rstrip("/") or path.startswith(r[0])),
             None,
         )
-        if route is None:
-            return None
-        rel = path[len(route[0]):] or "index.html"
-        base = route[1]
+        if route is not None:
+            rel = path[len(route[0]):] or "index.html"
+            base = route[1]
+        else:
+            # 其余文件按站点根目录静态兜底（fonts/、README 等）
+            base = ROOT
+            rel = path.lstrip("/")
         file = os.path.normpath(os.path.join(base, rel))
         # 防目录穿越
         if not (file == base or file.startswith(base + os.sep)):
