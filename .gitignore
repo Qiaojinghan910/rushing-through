@@ -1,0 +1,5 @@
+# 忽略本地克隆的三个项目副本（线上版各自部署在作者自己的 GitHub Pages）
+shadertoy-1d-radial-lightmap/
+lifebook/
+webgpu-compute-water/
+.DS_Store

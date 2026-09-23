@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>RUSHING THROUGH · 紧张地穿梭</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 6' shape-rendering='crispEdges'%3E%3Crect x='1' width='2' height='1' fill='%23f06ba8'/%3E%3Crect x='4' width='2' height='1' fill='%23f06ba8'/%3E%3Crect y='1' width='7' height='2' fill='%23f06ba8'/%3E%3Crect x='1' y='3' width='5' height='1' fill='%23f06ba8'/%3E%3Crect x='2' y='4' width='3' height='1' fill='%23f06ba8'/%3E%3Crect x='3' y='5' width='1' height='1' fill='%23f06ba8'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* 粉彩像素盘 */
+    --navy: #2d3a8c;        /* 描边/正文 */
+    --slate: #58749e;       /* 页面外底 */
+    --screen: #eaf6ff;      /* 屏幕底色 */
+    --pink: #f7a8c4;
+    --hotpink: #f06ba8;
+    --lavender: #b18ce0;
+    --purple: #7f6cc9;
+    --mint: #9fe6a0;        /* START 按钮 */
+    --shell-mint: #8fd8c8;
+    --shell-pink: #f9b8d0;
+    --shell-blue: #a8c8f0;
+    --shell-gold: #e8c97a;
+    --yellow: #ffd94c;
+    --red: #f2695c;
+    --px: "Press Start 2P", "Courier New", monospace;
+    --cn: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--slate);
+    color: var(--navy);
+    font-family: var(--cn);
+    line-height: 1.9;
+  }
+  ::selection { background: var(--pink); color: var(--navy); }
+
+  /* ── 像素双线框（粉+蓝）────────────────────── */
+  .px-frame {
+    border-style: solid;
+    border-width: 12px;
+    border-image-source: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Crect width='12' height='1' fill='%23f7a8c4'/%3E%3Crect y='11' width='12' height='1' fill='%23f7a8c4'/%3E%3Crect width='1' height='12' fill='%23f7a8c4'/%3E%3Crect x='11' width='1' height='12' fill='%23f7a8c4'/%3E%3Crect x='1' y='1' width='10' height='1' fill='%232d3a8c'/%3E%3Crect x='1' y='10' width='10' height='1' fill='%232d3a8c'/%3E%3Crect x='1' y='1' width='1' height='10' fill='%232d3a8c'/%3E%3Crect x='10' y='1' width='1' height='10' fill='%232d3a8c'/%3E%3C/svg%3E");
+    border-image-slice: 3;
+  }
+
+  .screen {
+    max-width: 1120px;
+    margin: 22px auto;
+    background: var(--screen);
+    box-shadow: 0 0 0 4px #45608a, 10px 12px 0 rgba(20, 30, 70, .35);
+  }
+
+  .px { font-family: var(--px); }
+
+  @keyframes blink { 50% { opacity: 0; } }
+  .blink { animation: blink 1.15s steps(1) infinite; }
+
+  svg.pxart { display: block; }
+
+  /* ── HUD 顶栏 ─────────────────────────────── */
+  .hud {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    padding: 12px 22px;
+    background: var(--screen);
+    border-bottom: 4px solid var(--navy);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .14em; font-size: 1rem; color: var(--navy); text-decoration: none; }
+  .brand svg { width: 18px; height: 16px; }
+  .brand .en { font-family: var(--px); font-size: 8px; color: var(--hotpink); letter-spacing: 1px; padding-top: 3px; }
+  .hud-links { display: flex; align-items: center; gap: 20px; }
+  .hud-links a { color: var(--navy); text-decoration: none; font-weight: 700; font-size: .95rem; letter-spacing: .1em; }
+  .hud-links a::before { content: "▸ "; color: var(--hotpink); }
+  .hud-links a:hover { color: var(--hotpink); }
+  .hud-hearts { display: flex; gap: 7px; }
+  .hud-hearts svg { width: 17px; height: 15px; }
+
+  /* ── 首屏 GAME START ──────────────────────── */
+  .hero {
+    position: relative; text-align: center; padding: 66px 22px 0; overflow: hidden;
+    /* 天空里的两条横向光带 */
+    background-image:
+      linear-gradient(180deg, transparent 0 238px, rgba(255, 255, 255, .45) 238px 286px, transparent 286px),
+      linear-gradient(180deg, transparent 0 286px, rgba(168, 200, 240, .35) 286px 340px, transparent 340px);
+  }
+  .hero .tagline { font-family: var(--px); font-size: 10px; letter-spacing: 3px; color: #6a7fc0; margin: 0 0 30px; }
+  .hero h1 {
+    margin: 0;
+    font-family: var(--px);
+    font-size: clamp(30px, 5.4vw, 52px);
+    letter-spacing: 8px; line-height: 1.5;
+    color: var(--navy);
+    text-shadow: 6px 6px 0 var(--pink);
+  }
+  .hero h1 .troph { display: inline-block; width: .8em; height: .8em; margin-right: .3em; }
+  .hero .subtitle-cn {
+    margin: 30px 0 0;
+    font-size: clamp(1.15rem, 2.6vw, 1.45rem);
+    font-weight: 900; letter-spacing: .55em; text-indent: .55em;
+    color: var(--navy);
+    text-shadow: 3px 3px 0 var(--pink);
+  }
+  .hero .subtitle-line { color: #5a6aa8; margin: 20px 0 34px; font-size: 1.02rem; }
+
+  .start-btn {
+    display: inline-block; text-decoration: none;
+    font-family: var(--px); font-size: 17px; letter-spacing: 4px;
+    color: var(--hotpink); background: var(--mint);
+    border: 4px solid var(--navy);
+    box-shadow: 6px 6px 0 var(--navy);
+    padding: 17px 52px;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .start-btn:hover { background: #b2f0b3; }
+  .start-btn:active { transform: translate(6px, 6px); box-shadow: 0 0 0 var(--navy); }
+  .press { font-family: var(--px); font-size: 9px; color: #6a7fc0; letter-spacing: 2px; margin: 26px 0 0; }
+
+  /* 首屏装饰 */
+  .flake { position: absolute; opacity: .5; pointer-events: none; }
+  .hero .f1 { top: 30px;  left: 7%;  width: 22px; }
+  .hero .f2 { top: 90px;  right: 9%; width: 16px; }
+  .hero .f3 { top: 250px; left: 12%; width: 14px; opacity: .35; }
+  .hero .f4 { top: 46px;  right: 26%; width: 13px; opacity: .35; }
+  .hero .sp1 { top: 320px; left: 22%; width: 18px; }
+  .hero .sp2 { top: 118px; right: 29%; width: 13px; }
+  .hero .hearts-tr { position: absolute; top: 26px; right: 4%; display: flex; gap: 8px; }
+  .hero .hearts-tr svg { width: 20px; height: 18px; }
+
+  /* 首屏底部：天际线 + 横带 */
+  .ground { margin-top: 54px; position: relative; }
+  .ground .skyline {
+    height: 90px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 90' shape-rendering='crispEdges'%3E%3Crect width='240' height='4' y='86' fill='%23c9b6f0'/%3E%3Crect x='0' y='44' width='28' height='42' fill='%236f5fbe'/%3E%3Crect x='30' y='28' width='20' height='58' fill='%237f6cc9'/%3E%3Crect x='34' y='34' width='3' height='3' fill='%23cabcf2'/%3E%3Crect x='41' y='40' width='3' height='3' fill='%23ffe89a'/%3E%3Crect x='34' y='46' width='3' height='3' fill='%23cabcf2'/%3E%3Crect x='52' y='52' width='34' height='34' fill='%236f5fbe'/%3E%3Crect x='58' y='58' width='4' height='4' fill='%23cabcf2'/%3E%3Crect x='70' y='58' width='4' height='4' fill='%23cabcf2'/%3E%3Crect x='88' y='20' width='24' height='66' fill='%237f6cc9'/%3E%3Crect x='99' y='10' width='2' height='10' fill='%237f6cc9'/%3E%3Crect x='92' y='26' width='3' height='3' fill='%23ffe89a'/%3E%3Crect x='101' y='34' width='3' height='3' fill='%23cabcf2'/%3E%3Crect x='92' y='44' width='3' height='3' fill='%23cabcf2'/%3E%3Crect x='114' y='40' width='30' height='46' fill='%236f5fbe'/%3E%3Crect x='120' y='46' width='4' height='4' fill='%23cabcf2'/%3E%3Crect x='132' y='52' width='4' height='4' fill='%23ffe89a'/%3E%3Crect x='146' y='26' width='22' height='60' fill='%237f6cc9'/%3E%3Crect x='151' y='32' width='3' height='3' fill='%23cabcf2'/%3E%3Crect x='160' y='40' width='3' height='3' fill='%23cabcf2'/%3E%3Crect x='170' y='48' width='36' height='38' fill='%236f5fbe'/%3E%3Crect x='176' y='54' width='4' height='4' fill='%23cabcf2'/%3E%3Crect x='190' y='60' width='4' height='4' fill='%23cabcf2'/%3E%3Crect x='208' y='32' width='32' height='54' fill='%237f6cc9'/%3E%3Crect x='214' y='38' width='3' height='3' fill='%23ffe89a'/%3E%3Crect x='224' y='46' width='3' height='3' fill='%23cabcf2'/%3E%3C/svg%3E") repeat-x top / 240px 90px;
+    position: relative;
+  }
+  .ground .road {
+    height: 28px;
+    background-color: var(--pink);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 28' shape-rendering='crispEdges'%3E%3Crect x='8' y='4' width='2' height='2' fill='%23ffffff' fill-opacity='.85'/%3E%3Crect x='40' y='22' width='2' height='2' fill='%23ffffff' fill-opacity='.8'/%3E%3Crect x='72' y='7' width='2' height='2' fill='%23ffffff' fill-opacity='.85'/%3E%3C/svg%3E"),
+      repeating-linear-gradient(90deg, #fff 0 20px, transparent 20px 46px);
+    background-size: 90px 28px, 100% 4px;
+    background-position: 0 0, 0 50%;
+    background-repeat: repeat-x, no-repeat;
+  }
+  .ground .grass {
+    height: 32px;
+    background-color: var(--purple);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 32' shape-rendering='crispEdges'%3E%3Crect x='12' y='6' width='2' height='2' fill='%23ffffff' fill-opacity='.85'/%3E%3Crect x='44' y='16' width='2' height='2' fill='%23ffe89a'/%3E%3Crect x='68' y='9' width='2' height='2' fill='%23ffffff' fill-opacity='.7'/%3E%3Crect x='30' y='24' width='2' height='2' fill='%23ffe89a' fill-opacity='.9'/%3E%3C/svg%3E");
+    background-size: 90px 32px;
+    background-repeat: repeat-x;
+    box-shadow: inset 0 5px 0 var(--lavender);
+  }
+  .ground .lav { height: 12px; background: var(--lavender); }
+  .ground .soil { height: 44px; background: var(--navy); background-image: repeating-linear-gradient(90deg, rgba(255,255,255,.09) 0 10px, transparent 10px 34px), repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 6px, transparent 6px 26px); }
+
+  .bubble { position: absolute; bottom: 172px; z-index: 2; }
+  .bubble svg { width: 58px; height: 46px; }
+  .bubble.b1 { left: 14.5%; }
+  .bubble.b2 { right: 14%; bottom: 182px; }
+  .char { position: absolute; bottom: 92px; z-index: 2; height: 62px; width: auto; }
+  .char.c1 { left: 16%; }
+  .char.c2 { right: 16%; }
+
+  /* ── 小节标题 ─────────────────────────────── */
+  section { padding: 64px 40px 10px; }
+  .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 26px; flex-wrap: wrap; margin-bottom: 34px; }
+  .sec-head .cn { font-size: 1.25rem; font-weight: 800; letter-spacing: .3em; margin-top: 12px; }
+  .sec-head h2 { margin: 0; font-family: var(--px); font-size: clamp(15px, 2.6vw, 22px); letter-spacing: 3px; color: var(--navy); display: flex; align-items: center; gap: 14px; }
+  .sec-head h2 svg { width: 20px; height: 20px; }
+  .sec-head .bar { width: 130px; height: 10px; background: var(--pink); box-shadow: 14px 0 0 var(--lavender); margin-top: 12px; }
+  .sec-note { margin: 0; color: #5a6aa8; max-width: 380px; font-size: .95rem; }
+
+  /* ── 序幕对话框 ───────────────────────────── */
+  .win { background: #fff; margin-bottom: 34px; box-shadow: 8px 8px 0 rgba(45, 58, 140, .22); }
+  .win-title {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--navy); color: #fff;
+    font-family: var(--px); font-size: 9px; letter-spacing: 2px;
+    padding: 8px 10px 8px 16px;
+  }
+  .win-x {
+    width: 20px; height: 20px; display: grid; place-items: center;
+    background: var(--red); color: #fff; font-size: 14px; line-height: 1;
+    border: 2px solid #fff; font-family: var(--px);
+  }
+  .win-body { padding: 26px 30px 22px; }
+  .win-body > p { margin: 12px 0 0; font-size: 1.04rem; }
+  .win-q {
+    margin: 16px 0 0 !important;
+    font-weight: 800; color: var(--navy);
+    background: #fdeef5; border-left: 8px solid var(--pink);
+    padding: 12px 18px;
+  }
+  .win-cursor { text-align: right; margin-top: 14px; color: var(--navy); font-size: 14px; }
+
+  /* 蝴蝶 / 鱼 / 人 三个小方块 */
+  .trio { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin: 24px 0 8px; }
+  .tb {
+    display: flex; align-items: center; gap: 14px;
+    background: #fff; border: 3px solid var(--navy);
+    box-shadow: 5px 5px 0 rgba(45, 58, 140, .25);
+    padding: 12px 20px; font-weight: 700; font-size: .98rem;
+  }
+  .tb svg { width: 32px; height: auto; flex: none; }
+
+  /* ── 章节卡片（三个项目）──────────────────── */
+  .card { background: #fff; margin-bottom: 56px; box-shadow: 10px 10px 0 rgba(45, 58, 140, .22); }
+  .card-inner { padding: 22px 26px 24px; }
+
+  .card-head { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 4px; }
+  .badge {
+    font-family: var(--px); font-size: 12px; color: var(--yellow);
+    background: var(--navy); padding: 12px 12px;
+    box-shadow: 0 0 0 3px var(--pink);
+  }
+  .card-head h3 { margin: 0; font-size: 1.3rem; letter-spacing: .16em; }
+  .card-tag { font-family: var(--px); font-size: 8px; letter-spacing: 1px; color: #7a86c0; background: #eef4ff; border: 2px solid #c9d6f2; padding: 6px 9px; }
+  .px-btn {
+    margin-left: auto; text-decoration: none; cursor: pointer;
+    font-family: var(--px); font-size: 10px; letter-spacing: 2px;
+    color: var(--hotpink); background: var(--mint);
+    border: 3px solid var(--navy);
+    box-shadow: 4px 4px 0 var(--navy);
+    padding: 11px 18px;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .px-btn:hover { background: #b2f0b3; }
+  .px-btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--navy); }
+
+  .card-sub { margin: 2px 0 8px; color: var(--hotpink); font-weight: 800; letter-spacing: .18em; font-size: .95rem; }
+  .card-sub::before { content: "▸ "; }
+  .desc { margin: 6px 0 0; }
+  .quote {
+    margin: 14px 0 18px;
+    font-weight: 800; color: var(--navy);
+    background: #fdeef5; border-left: 8px solid var(--pink);
+    padding: 10px 16px;
+  }
+  .ref { margin: 0 0 18px; font-size: .88rem; color: #5a6aa8; }
+  .ref a { color: var(--hotpink); font-weight: 700; text-decoration: none; border-bottom: 2px dashed var(--pink); }
+  .ref a:hover { color: var(--navy); border-bottom-color: var(--navy); }
+
+  /* 掌机 / 显示器 外壳包住 iframe */
+  .console {
+    background: var(--shell);
+    border: 4px solid var(--navy);
+    box-shadow: 0 0 0 4px var(--shell), 0 0 0 7px rgba(45, 58, 140, .5), 10px 12px 0 rgba(45, 58, 140, .18);
+    padding: 14px 14px 10px;
+  }
+  .crt { position: relative; border: 8px solid #1c2650; background: #1c2650; line-height: 0; }
+  .crt iframe {
+    width: 100%; aspect-ratio: 16 / 9; min-height: 340px;
+    border: 0; display: block; background: #10163a;
+  }
+  .crt::after {  /* 淡淡的扫描线 */
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(16, 22, 58, .07) 0 2px, transparent 2px 5px);
+  }
+  .console-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 4px 2px; }
+  .console-label { font-family: var(--px); font-size: 8px; letter-spacing: 2px; color: rgba(45, 58, 140, .65); }
+  .led-wrap { display: flex; align-items: center; gap: 8px; font-family: var(--px); font-size: 7px; color: rgba(45, 58, 140, .65); }
+  .led { width: 9px; height: 9px; background: var(--red); box-shadow: 0 0 0 2px rgba(45,58,140,.4); animation: blink 2s steps(1) infinite; }
+
+  .hint { margin: 14px 2px 0; color: #5a6aa8; font-size: .92rem; }
+  .hint b {
+    color: var(--navy); background: #eef4ff; border: 2px solid #c9d6f2;
+    padding: 1px 7px; font-family: ui-monospace, monospace; font-size: .85em;
+  }
+  .hint::before { content: "▶ "; color: var(--hotpink); }
+
+  /* ── 从旁观，到进入：三步递进 ─────────────── */
+  .steps { display: flex; align-items: stretch; justify-content: center; gap: 14px; flex-wrap: nowrap; margin-bottom: 26px; }
+  .step {
+    flex: 1; display: flex; align-items: center; justify-content: center; text-align: center;
+    background: #fff; border: 3px solid var(--navy);
+    box-shadow: 6px 6px 0 rgba(45, 58, 140, .25);
+    padding: 20px 18px; font-weight: 800; font-size: 1.05rem; line-height: 1.9;
+  }
+  .step b { color: var(--hotpink); }
+  .step-arrow { align-self: center; color: var(--hotpink); font-size: 20px; flex: none; }
+  .steps-note { text-align: center; color: #5a6aa8; max-width: 640px; margin: 0 auto; font-size: 1rem; }
+  .steps-note b { color: var(--navy); }
+
+  /* ── 尾声（深蓝收束屏）────────────────────── */
+  .finale { background: var(--navy); text-align: center; padding: 74px 24px 66px; margin-top: 80px; }
+  .finale .f-en { font-family: var(--px); font-size: clamp(17px, 3.6vw, 28px); letter-spacing: 6px; margin: 22px 0 0; }
+  .finale .c1 { color: var(--pink); }
+  .finale .c2 { color: var(--yellow); }
+  .finale .c3 { color: var(--shell-mint); }
+  .finale .f-cn { color: #fff; font-weight: 800; letter-spacing: .4em; text-indent: .4em; margin: 30px 0 0; font-size: 1.15rem; }
+  .finale .f-line { width: 64px; height: 6px; background: var(--pink); box-shadow: 14px 0 0 var(--lavender); margin: 38px auto; }
+  .finale .f-cn2 { color: var(--yellow); font-weight: 800; letter-spacing: .5em; text-indent: .5em; font-size: 1.05rem; margin: 0; }
+  .finale .f-q { color: #fff; font-size: clamp(1.1rem, 2.6vw, 1.3rem); font-weight: 800; line-height: 2.2; margin: 20px 0 0; }
+  .finale .f-q svg { width: 18px; height: 16px; display: inline-block; vertical-align: -2px; margin-left: 8px; }
+
+  /* ── 页脚 ─────────────────────────────────── */
+  footer { background: var(--navy); border-top: 4px solid var(--pink); color: #cfe0f5; text-align: center; padding: 30px 22px 28px; }
+  footer .coins { display: flex; justify-content: center; gap: 10px; margin-bottom: 16px; }
+  footer .coins svg { width: 20px; height: 20px; }
+  footer .line1 { font-family: var(--px); font-size: 10px; letter-spacing: 3px; }
+  footer .line2 { margin-top: 12px; font-size: .9rem; color: #9db4dd; }
+  footer .credits { margin-top: 8px; font-size: .78rem; color: #7e97c9; }
+
+  @media (max-width: 860px) {
+    .steps { flex-direction: column; }
+    .step-arrow { transform: rotate(90deg); }
+  }
+  @media (max-width: 760px) {
+    section { padding: 50px 18px 6px; }
+    .hud { padding: 10px 14px; }
+    .hud-links { gap: 12px; }
+    .hud-hearts { display: none; }
+    .card-inner { padding: 18px 14px 18px; }
+    .bubble.b1 { left: 6%; }
+    .bubble.b2 { right: 5%; }
+    .crt iframe { min-height: 260px; }
+    .hero h1 { letter-spacing: 4px; }
+    .char { height: 44px; }
+    .win-body { padding: 20px 16px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="screen px-frame">
+
+  <!-- ═══════════ HUD 顶栏 ═══════════ -->
+  <nav class="hud">
+    <a class="brand" href="#top">
+      <svg class="pxart" viewBox="0 0 7 6" shape-rendering="crispEdges"><rect x="1" width="2" height="1" fill="#f06ba8"/><rect x="4" width="2" height="1" fill="#f06ba8"/><rect y="1" width="7" height="2" fill="#f06ba8"/><rect x="1" y="3" width="5" height="1" fill="#f06ba8"/><rect x="2" y="4" width="3" height="1" fill="#f06ba8"/><rect x="3" y="5" width="1" height="1" fill="#f06ba8"/></svg>
+      紧张地穿梭 <span class="en">RUSHING THROUGH</span>
+    </a>
+    <div class="hud-links">
+      <a href="#words">序幕</a>
+      <a href="#games">三个作品</a>
+      <a href="#perspective">尾声</a>
+    </div>
+    <div class="hud-hearts">
+      <svg class="pxart" viewBox="0 0 7 6" shape-rendering="crispEdges"><rect x="1" width="2" height="1" fill="#f06ba8"/><rect x="4" width="2" height="1" fill="#f06ba8"/><rect y="1" width="7" height="2" fill="#f06ba8"/><rect x="1" y="3" width="5" height="1" fill="#f06ba8"/><rect x="2" y="4" width="3" height="1" fill="#f06ba8"/><rect x="3" y="5" width="1" height="1" fill="#f06ba8"/></svg>
+      <svg class="pxart" viewBox="0 0 7 6" shape-rendering="crispEdges"><rect x="1" width="2" height="1" fill="#f7a8c4"/><rect x="4" width="2" height="1" fill="#f7a8c4"/><rect y="1" width="7" height="2" fill="#f7a8c4"/><rect x="1" y="3" width="5" height="1" fill="#f7a8c4"/><rect x="2" y="4" width="3" height="1" fill="#f7a8c4"/><rect x="3" y="5" width="1" height="1" fill="#f7a8c4"/></svg>
+      <svg class="pxart" viewBox="0 0 7 6" shape-rendering="crispEdges"><rect x="1" width="2" height="1" fill="#f7a8c4"/><rect x="4" width="2" height="1" fill="#f7a8c4"/><rect y="1" width="7" height="2" fill="#f7a8c4"/><rect x="1" y="3" width="5" height="1" fill="#f7a8c4"/><rect x="2" y="4" width="3" height="1" fill="#f7a8c4"/><rect x="3" y="5" width="1" height="1" fill="#f7a8c4"/></svg>
+    </div>
+  </nav>
+
+  <!-- ═══════════ 首屏 GAME START ═══════════ -->
+  <header class="hero" id="top">
+    <!-- 像素雪花 -->
+    <svg class="pxart flake f1" viewBox="0 0 14 14" fill="none" stroke="#a8c8f0" stroke-width="1.6" stroke-linecap="square"><path d="M7 1 V13 M1 7 H13 M3 3 L11 11 M11 3 L3 11"/></svg>
+    <svg class="pxart flake f2" viewBox="0 0 14 14" fill="none" stroke="#a8c8f0" stroke-width="1.6" stroke-linecap="square"><path d="M7 1 V13 M1 7 H13 M3 3 L11 11 M11 3 L3 11"/></svg>
+    <svg class="pxart flake f3" viewBox="0 0 14 14" fill="none" stroke="#a8c8f0" stroke-width="1.6" stroke-linecap="square"><path d="M7 1 V13 M1 7 H13 M3 3 L11 11 M11 3 L3 11"/></svg>
+    <svg class="pxart flake f4" viewBox="0 0 14 14" fill="none" stroke="#f7a8c4" stroke-width="1.6" stroke-linecap="square"><path d="M7 1 V13 M1 7 H13 M3 3 L11 11 M11 3 L3 11"/></svg>
+    <!-- 像素星星 -->
+    <svg class="pxart flake sp1" viewBox="0 0 14 14"><path d="M7 0 L9 5 L14 7 L9 9 L7 14 L5 9 L0 7 L5 5 Z" fill="#ffd94c" stroke="#2d3a8c" stroke-width="1"/></svg>
+    <svg class="pxart flake sp2" viewBox="0 0 14 14"><path d="M7 0 L9 5 L14 7 L9 9 L7 14 L5 9 L0 7 L5 5 Z" fill="#ffd94c" stroke="#2d3a8c" stroke-width="1"/></svg>
+
+    <div class="hearts-tr">
+      <svg class="pxart" viewBox="0 0 7 6" shape-rendering="crispEdges"><rect x="1" width="2" height="1" fill="#f06ba8"/><rect x="4" width="2" height="1" fill="#f06ba8"/><rect y="1" width="7" height="2" fill="#f06ba8"/><rect x="1" y="3" width="5" height="1" fill="#f06ba8"/><rect x="2" y="4" width="3" height="1" fill="#f06ba8"/><rect x="3" y="5" width="1" height="1" fill="#f06ba8"/></svg>
+      <svg class="pxart" viewBox="0 0 7 6" shape-rendering="crispEdges"><rect x="1" width="2" height="1" fill="#f7a8c4"/><rect x="4" width="2" height="1" fill="#f7a8c4"/><rect y="1" width="7" height="2" fill="#f7a8c4"/><rect x="1" y="3" width="5" height="1" fill="#f7a8c4"/><rect x="2" y="4" width="3" height="1" fill="#f7a8c4"/><rect x="3" y="5" width="1" height="1" fill="#f7a8c4"/></svg>
+      <svg class="pxart" viewBox="0 0 7 6" shape-rendering="crispEdges"><rect x="1" width="2" height="1" fill="#f7a8c4"/><rect x="4" width="2" height="1" fill="#f7a8c4"/><rect y="1" width="7" height="2" fill="#f7a8c4"/><rect x="1" y="3" width="5" height="1" fill="#f7a8c4"/><rect x="2" y="4" width="3" height="1" fill="#f7a8c4"/><rect x="3" y="5" width="1" height="1" fill="#f7a8c4"/></svg>
+    </div>
+
+    <p class="tagline">THREE WORLDS · ONE QUESTION</p>
+    <h1>RUSHING<br><svg class="troph pxart" viewBox="0 0 12 12" shape-rendering="crispEdges"><rect x="3" width="6" height="6" fill="#ffd94c"/><rect x="3" width="6" height="1" fill="#ffe89a"/><rect x="1" y="1" width="2" height="1" fill="#ffd94c"/><rect x="9" y="1" width="2" height="1" fill="#ffd94c"/><rect x="5" y="6" width="2" height="2" fill="#ffd94c"/><rect x="3" y="8" width="6" height="2" fill="#c89a2c"/><rect x="2" y="10" width="8" height="2" fill="#c89a2c"/><rect x="4" y="2" width="1" height="3" fill="#fff3b8"/></svg>THROUGH</h1>
+    <p class="subtitle-cn">紧张地穿梭</p>
+    <p class="subtitle-line">三个可以亲手玩的小世界，从三个尺度讨论同一个问题。</p>
+
+    <a class="start-btn" href="#words">START</a>
+    <p class="press blink">PRESS START · INSERT COIN</p>
+
+    <!-- 对话气泡 -->
+    <div class="bubble b1">
+      <svg class="pxart" viewBox="0 0 56 46" shape-rendering="crispEdges">
+        <rect x="1" y="1" width="54" height="34" fill="#fff" stroke="#2d3a8c" stroke-width="2"/>
+        <path d="M24 35 h8 v4 h-4 z" fill="#fff" stroke="#2d3a8c" stroke-width="2"/>
+        <circle cx="28" cy="18" r="10" fill="#ffd94c" stroke="#2d3a8c" stroke-width="2"/>
+        <rect x="24" y="13" width="2" height="5" fill="#2d3a8c"/>
+        <rect x="31" y="13" width="2" height="5" fill="#2d3a8c"/>
+        <path d="M23 22 q5 5 10 0" stroke="#2d3a8c" stroke-width="2" fill="none"/>
+      </svg>
+    </div>
+    <div class="bubble b2">
+      <svg class="pxart" viewBox="0 0 56 46" shape-rendering="crispEdges">
+        <rect x="1" y="1" width="54" height="34" fill="#fff" stroke="#2d3a8c" stroke-width="2"/>
+        <path d="M24 35 h8 v4 h-4 z" fill="#fff" stroke="#2d3a8c" stroke-width="2"/>
+        <rect x="23" y="9" width="4" height="2" fill="#f06ba8"/><rect x="29" y="9" width="4" height="2" fill="#f06ba8"/>
+        <rect x="20" y="11" width="16" height="6" fill="#f06ba8"/>
+        <rect x="22" y="17" width="12" height="2" fill="#f06ba8"/>
+        <rect x="25" y="19" width="6" height="2" fill="#f06ba8"/>
+        <rect x="27" y="21" width="2" height="2" fill="#f06ba8"/>
+      </svg>
+    </div>
+
+    <!-- 天际线 + 横带 + 小人 -->
+    <div class="ground">
+      <div class="skyline"></div>
+      <!-- 左：扎辫子的女孩 -->
+      <svg class="pxart char c1" viewBox="0 0 14 17" shape-rendering="crispEdges">
+        <rect x="3" width="8" height="2" fill="#2b3160"/>
+        <rect x="2" y="2" width="2" height="4" fill="#2b3160"/>
+        <rect x="10" y="2" width="2" height="4" fill="#2b3160"/>
+        <rect x="4" y="2" width="6" height="4" fill="#ffdfc2"/>
+        <rect x="4" y="2" width="6" height="1" fill="#2b3160"/>
+        <rect x="5" y="4" width="1" height="1" fill="#2b3160"/>
+        <rect x="8" y="4" width="1" height="1" fill="#2b3160"/>
+        <rect x="3" y="6" width="8" height="5" fill="#f7a8c4"/>
+        <rect x="5" y="6" width="4" height="1" fill="#ffffff"/>
+        <rect x="2" y="11" width="10" height="2" fill="#f7a8c4"/>
+        <rect x="2" y="7" width="1" height="3" fill="#ffdfc2"/>
+        <rect x="11" y="7" width="1" height="3" fill="#ffdfc2"/>
+        <rect x="4" y="13" width="2" height="3" fill="#ffdfc2"/>
+        <rect x="8" y="13" width="2" height="3" fill="#ffdfc2"/>
+        <rect x="4" y="16" width="2" height="1" fill="#f06ba8"/>
+        <rect x="8" y="16" width="2" height="1" fill="#f06ba8"/>
+      </svg>
+      <!-- 右：白衣服的男孩 -->
+      <svg class="pxart char c2" viewBox="0 0 14 16" shape-rendering="crispEdges">
+        <rect x="3" width="8" height="2" fill="#2b3160"/>
+        <rect x="3" y="2" width="1" height="2" fill="#2b3160"/>
+        <rect x="10" y="2" width="1" height="2" fill="#2b3160"/>
+        <rect x="4" y="2" width="6" height="4" fill="#ffdfc2"/>
+        <rect x="4" y="2" width="6" height="1" fill="#2b3160"/>
+        <rect x="5" y="4" width="1" height="1" fill="#2b3160"/>
+        <rect x="8" y="4" width="1" height="1" fill="#2b3160"/>
+        <rect x="3" y="6" width="8" height="5" fill="#ffffff"/>
+        <rect x="2" y="7" width="1" height="3" fill="#ffffff"/>
+        <rect x="11" y="7" width="1" height="3" fill="#ffffff"/>
+        <rect x="3" y="11" width="8" height="2" fill="#6fa8c9"/>
+        <rect x="4" y="13" width="2" height="2" fill="#ffdfc2"/>
+        <rect x="8" y="13" width="2" height="2" fill="#ffdfc2"/>
+        <rect x="4" y="15" width="2" height="1" fill="#2d3a8c"/>
+        <rect x="8" y="15" width="2" height="1" fill="#2d3a8c"/>
+      </svg>
+      <div class="road"></div>
+      <div class="grass"></div>
+      <div class="lav"></div>
+      <div class="soil"></div>
+    </div>
+  </header>
+
+  <!-- ═══════════ 序幕 ═══════════ -->
+  <section id="words">
+    <div class="win px-frame">
+      <div class="win-title"><span>PROLOGUE · RUSHING THROUGH</span><span class="win-x">×</span></div>
+      <div class="win-body">
+        <p>我们没有把「紧张地穿梭」限定为一种视觉风格，而是把它理解为一种共同的体验。</p>
+
+        <div class="trio">
+          <div class="tb">
+            <svg class="pxart" viewBox="0 0 14 12" shape-rendering="crispEdges">
+              <rect x="1" y="1" width="5" height="4" fill="#f06ba8"/>
+              <rect x="8" y="1" width="5" height="4" fill="#f06ba8"/>
+              <rect x="2" y="5" width="4" height="3" fill="#b18ce0"/>
+              <rect x="8" y="5" width="4" height="3" fill="#b18ce0"/>
+              <rect x="6" y="0" width="2" height="12" fill="#2d3a8c"/>
+            </svg>
+            一只被光影追逐的<b>蝴蝶</b>
+          </div>
+          <div class="tb">
+            <svg class="pxart" viewBox="0 0 14 9" shape-rendering="crispEdges">
+              <rect x="1" y="2" width="9" height="5" fill="#f2695c"/>
+              <path d="M10 4.5 L14 1 V8 Z" fill="#f2695c"/>
+              <rect x="3" y="3" width="2" height="2" fill="#2d3a8c"/>
+            </svg>
+            一群在池塘中慌乱游动的<b>鱼</b>
+          </div>
+          <div class="tb">
+            <svg class="pxart" viewBox="0 0 10 14" shape-rendering="crispEdges">
+              <rect x="3" y="0" width="4" height="4" fill="#ffd94c"/>
+              <rect x="2" y="5" width="6" height="5" fill="#2d3a8c"/>
+              <rect x="2" y="10" width="2" height="4" fill="#2d3a8c"/>
+              <rect x="6" y="10" width="2" height="4" fill="#2d3a8c"/>
+            </svg>
+            一个被时间推向人生下一页的<b>人</b>
+          </div>
+        </div>
+
+        <p>从<b>追逐、扰动到流逝</b>，三个作品从不同尺度讨论同一个问题：</p>
+        <p class="win-q">当我们不断被推向下一刻，还有多少时间看清正在经过的一切？</p>
+        <div class="win-cursor"><span class="blink">▼</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 三个作品（iframe 可直接玩）═══════════ -->
+  <section id="games">
+    <div class="sec-head">
+      <div>
+        <h2><svg class="pxart" viewBox="0 0 14 14"><path d="M7 0 L9 5 L14 7 L9 9 L7 14 L5 9 L0 7 L5 5 Z" fill="#ffd94c" stroke="#2d3a8c" stroke-width="1"/></svg>GAME SELECT</h2>
+        <div class="bar"></div>
+        <div class="cn">三个世界，一条线</div>
+      </div>
+      <p class="sec-note">每一扇小窗都能直接上手玩；玩累了点「全屏玩」，看得更清楚。</p>
+    </div>
+
+    <!-- ── 01 CHASE 光影追猎（shadertoy 光影着色器）── -->
+    <article class="card px-frame">
+      <div class="card-inner">
+        <div class="card-head">
+          <span class="badge">01</span>
+          <h3>光影追猎</h3>
+          <span class="card-tag">CHASE · WEBGL</span>
+          <a class="px-btn" href="https://wzqwzq519.github.io/shadertoy-1d-radial-lightmap/" target="_blank" rel="noopener">▶ 全屏玩</a>
+        </div>
+        <p class="card-sub">穿梭于光与影之间</p>
+        <p class="desc">黑暗中，六盏光不断呼吸、明灭、游走。蝴蝶穿行于柱林与圆环之间，时而掠过光源，时而隐入阴影。距离场的光线始终追随着它的轨迹。</p>
+        <p class="quote">光在呼吸，影在扑咬。穿梭，成为一场无法停止的追逐。</p>
+        <p class="ref">↗ 原作参考 · <a href="https://www.shadertoy.com/view/XsK3RR" target="_blank" rel="noopener">shadertoy.com/view/XsK3RR</a></p>
+        <div class="console" style="--shell: var(--shell-mint);">
+          <div class="crt">
+            <iframe src="https://wzqwzq519.github.io/shadertoy-1d-radial-lightmap/" loading="lazy" title="光影追猎" allow="fullscreen"></iframe>
+          </div>
+          <div class="console-bar">
+            <span class="console-label">PIXEL-01 · CHASE</span>
+            <span class="led-wrap"><span class="led"></span>POWER</span>
+          </div>
+        </div>
+        <p class="hint">小贴士：<b>拖动鼠标</b> 移动光源 · <b>Space</b> 暂停 · <b>R</b> 重置 · <b>P</b> 参数面板 · <b>H</b> 收起面板</p>
+      </div>
+    </article>
+
+    <!-- ── 02 DISTURBANCE 池塘一梦（webgpu-compute-water）── -->
+    <article class="card px-frame">
+      <div class="card-inner">
+        <div class="card-head">
+          <span class="badge">02</span>
+          <h3>池塘一梦</h3>
+          <span class="card-tag">DISTURBANCE · WEBGPU</span>
+          <a class="px-btn" href="https://sonwnooo.github.io/pond/" target="_blank" rel="noopener">▶ 全屏玩</a>
+        </div>
+        <p class="card-sub">穿梭于宁静与慌乱之间</p>
+        <p class="desc">炎炎夏日，池塘像一场透明的梦。大鱼追逐小鱼，水波撞向小鸭。随着鼠标移动，原本平静的池塘被轻轻扰动。小鱼像童年里懵懂奔跑的我们——</p>
+        <p class="quote">不知道要去哪里，只是不停向前。</p>
+        <div class="console" style="--shell: var(--shell-blue);">
+          <div class="crt">
+            <iframe src="https://sonwnooo.github.io/pond/" loading="lazy" title="池塘一梦" allow="autoplay; fullscreen"></iframe>
+          </div>
+          <div class="console-bar">
+            <span class="console-label">PIXEL-02 · DISTURBANCE</span>
+            <span class="led-wrap"><span class="led"></span>POWER</span>
+          </div>
+        </div>
+        <p class="hint">小贴士：鼠标在画面里移一移，小鱼就来陪你玩；点一下水面还能听见水声。需要 Chrome / Edge 等支持 WebGPU 的浏览器。</p>
+      </div>
+    </article>
+
+    <!-- ── 03 PASSAGE 《转眼》（lifebook）── -->
+    <article class="card px-frame">
+      <div class="card-inner">
+        <div class="card-head">
+          <span class="badge">03</span>
+          <h3>《转眼》</h3>
+          <span class="card-tag">PASSAGE · REACT</span>
+          <a class="px-btn" href="https://qiaojinghan910.github.io/lifebook/" target="_blank" rel="noopener">▶ 全屏玩</a>
+        </div>
+        <p class="card-sub">穿梭于人生与时间之间</p>
+        <p class="desc">人的一生被压缩成一本不断翻动的书。成长、选择、离家、工作、亲情与衰老接连到来。随着人生推进，选择时间越来越短，翻页越来越快。直到生命后半程，时间重新慢下来。而转眼回望，那些来不及停留的瞬间，已经成为了一生。</p>
+        <p class="quote">曾经，我们是被等待的人。后来，我们成为了等待的人。</p>
+        <div class="console" style="--shell: var(--shell-pink);">
+          <div class="crt">
+            <iframe src="https://qiaojinghan910.github.io/lifebook/" loading="lazy" title="转眼" allow="autoplay; fullscreen"></iframe>
+          </div>
+          <div class="console-bar">
+            <span class="console-label">PIXEL-03 · PASSAGE</span>
+            <span class="led-wrap"><span class="led"></span>POWER</span>
+          </div>
+        </div>
+        <p class="hint">小贴士：点击画面就能翻页；背景音乐会轻轻响起，音量记得调得刚刚好。</p>
+      </div>
+    </article>
+
+    <!-- ── 04 THE THREAD 一线三梦（串联三个作品的新项目）── -->
+    <article class="card px-frame">
+      <div class="card-inner">
+        <div class="card-head">
+          <span class="badge">04</span>
+          <h3>一线三梦</h3>
+          <span class="card-tag">THE THREAD · LINK</span>
+          <a class="px-btn" href="https://sonwnooo.github.io/lifebook/" target="_blank" rel="noopener">▶ 全屏玩</a>
+        </div>
+        <p class="card-sub">穿梭于三个世界之间</p>
+        <p class="desc">走廊、池塘、书页——三个世界原本各自沉睡。这个项目是一条把它们串起来的线：跟着它出发，先撞见蝴蝶的一瞬，再跳进鱼群的一个夏天，最后合上人的一生。三个独立的梦，从此有了先后，也有了回声。</p>
+        <p class="quote">一条线，三场梦：追逐 → 扰动 → 流逝，正好走完一整次「紧张地穿梭」。</p>
+        <div class="console" style="--shell: var(--shell-gold);">
+          <div class="crt">
+            <iframe src="https://sonwnooo.github.io/lifebook/" loading="lazy" title="一线三梦" allow="autoplay; fullscreen"></iframe>
+          </div>
+          <div class="console-bar">
+            <span class="console-label">PIXEL-04 · THE THREAD</span>
+            <span class="led-wrap"><span class="led"></span>POWER</span>
+          </div>
+        </div>
+        <p class="hint">小贴士：建议先按 01 → 02 → 03 的顺序玩完三个世界，再拉开这条线，感受会完整很多。</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- ═══════════ 从旁观，到进入 ═══════════ -->
+  <section id="perspective">
+    <div class="sec-head">
+      <div>
+        <h2><svg class="pxart" viewBox="0 0 14 14"><path d="M7 0 L9 5 L14 7 L9 9 L7 14 L5 9 L0 7 L5 5 Z" fill="#ffd94c" stroke="#2d3a8c" stroke-width="1"/></svg>FROM SPACE TO LIFE</h2>
+        <div class="bar"></div>
+        <div class="cn">从旁观，到进入</div>
+      </div>
+      <p class="sec-note">三个作品，也对应着三个不断靠近自己的视角。</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">我们看着<b>蝴蝶</b>穿梭。</div>
+      <div class="step-arrow">▼</div>
+      <div class="step">我们看着<b>鱼</b>，想起自己。</div>
+      <div class="step-arrow">▼</div>
+      <div class="step">最后，我们成为那个<b>穿梭的人</b>。</div>
+    </div>
+    <p class="steps-note">从空间中的<b>追逐</b>，到记忆中的<b>扰动</b>，再到生命中的<b>流逝</b>。穿梭的尺度，也从一瞬逐渐延伸到一生。</p>
+  </section>
+
+  <!-- ═══════════ 尾声 ═══════════ -->
+  <section class="finale" id="finale">
+    <p class="f-en c1">A SECOND.</p>
+    <p class="f-en c2">A SUMMER.</p>
+    <p class="f-en c3">A LIFETIME.</p>
+    <p class="f-cn">一瞬。一个夏天。一生。</p>
+    <div class="f-line"></div>
+    <p class="f-cn2">转眼之间。</p>
+    <p class="f-q">当我们一直赶往下一刻，<br>我们究竟错过了多少正在发生的现在？<svg class="pxart blink" viewBox="0 0 7 6" shape-rendering="crispEdges"><rect x="1" width="2" height="1" fill="#f06ba8"/><rect x="4" width="2" height="1" fill="#f06ba8"/><rect y="1" width="7" height="2" fill="#f06ba8"/><rect x="1" y="3" width="5" height="1" fill="#f06ba8"/><rect x="2" y="4" width="3" height="1" fill="#f06ba8"/><rect x="3" y="5" width="1" height="1" fill="#f06ba8"/></svg></p>
+  </section>
+
+  <!-- ═══════════ 页脚 ═══════════ -->
+  <footer>
+    <div class="coins">
+      <svg class="pxart" viewBox="0 0 12 12" shape-rendering="crispEdges"><rect x="1" y="1" width="10" height="10" fill="#ffd94c" stroke="#c89a2c" stroke-width="1.5"/><rect x="4" y="4" width="4" height="4" fill="#ffe89a"/></svg>
+      <svg class="pxart" viewBox="0 0 12 12" shape-rendering="crispEdges"><rect x="1" y="1" width="10" height="10" fill="#ffd94c" stroke="#c89a2c" stroke-width="1.5"/><rect x="4" y="4" width="4" height="4" fill="#ffe89a"/></svg>
+      <svg class="pxart" viewBox="0 0 12 12" shape-rendering="crispEdges"><rect x="1" y="1" width="10" height="10" fill="#ffd94c" stroke="#c89a2c" stroke-width="1.5"/><rect x="4" y="4" width="4" height="4" fill="#ffe89a"/></svg>
+      <svg class="pxart" viewBox="0 0 12 12" shape-rendering="crispEdges"><rect x="1" y="1" width="10" height="10" fill="#ffd94c" stroke="#c89a2c" stroke-width="1.5"/><rect x="4" y="4" width="4" height="4" fill="#ffe89a"/></svg>
+      <svg class="pxart" viewBox="0 0 12 12" shape-rendering="crispEdges"><rect x="1" y="1" width="10" height="10" fill="#ffd94c" stroke="#c89a2c" stroke-width="1.5"/><rect x="4" y="4" width="4" height="4" fill="#ffe89a"/></svg>
+    </div>
+    <div class="line1">© 2026 RUSHING THROUGH</div>
+    <div class="line2">这间小屋，用像素、蜡笔和一点点爱心搭成。</div>
+    <div class="credits">三个作品来自开源项目：shadertoy-1d-radial-lightmap（原 shader 作者 Flyguy · CC BY-NC-SA 3.0） / 转眼 lifebook / webgpu-compute-water</div>
+  </footer>
+
+</div>
+
+</body>
+</html>
